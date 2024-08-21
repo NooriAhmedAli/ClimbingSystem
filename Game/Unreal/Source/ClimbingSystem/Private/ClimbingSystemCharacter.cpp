@@ -109,19 +109,30 @@ void AClimbingSystemCharacter::Move(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		FVector ForwardDirection;
+		FVector RightDirection;
 
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		if (MovementComponent->IsClimbing()) {
 
+			ForwardDirection = FVector::CrossProduct(MovementComponent->GetClimbSurfaceNormal(), -GetActorRightVector());
+			RightDirection = FVector::CrossProduct(MovementComponent->GetClimbSurfaceNormal(), GetActorUpVector());
+		}
+		else {
+
+			// find out which way is forward
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+			// get forward vector
+			ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+			// get right vector 
+			RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		}
 		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
+		
 	}
 }
 
@@ -165,10 +176,12 @@ void AClimbingSystemCharacter::MoveForward(float Value)
 
 	if (MovementComponent->IsClimbing())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("IsClimbing True"));
 		Direction = FVector::CrossProduct(MovementComponent->GetClimbSurfaceNormal(), -GetActorRightVector());
 	}
 	else
 	{
+		UE_LOG(LogTemp, Warning, TEXT("IsClimbing False"));
 		Direction = GetControlOrientationMatrix().GetUnitAxis(EAxis::X);
 	}
 
@@ -202,4 +215,5 @@ FRotationMatrix AClimbingSystemCharacter::GetControlOrientationMatrix() const
 
 	return FRotationMatrix(YawRotation);
 }
+
 

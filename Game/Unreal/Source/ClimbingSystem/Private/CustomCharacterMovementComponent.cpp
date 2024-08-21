@@ -49,6 +49,7 @@ void UCustomCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, co
 		SetMovementMode(EMovementMode::MOVE_Custom, ECustomMovementMode::CMOVE_Climbing);
 	}
 
+
 	Super::OnMovementUpdated(DeltaSeconds, OldLocation, OldVelocity);
 }
 
